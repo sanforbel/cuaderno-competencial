@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Herramienta de evaluación competencial por criterios para Lengua Castellana y Literatura de 2.º de ESO. Registro criterio a criterio, seguimiento del grupo, informe individual y plan de recuperación.">
+<title>Cuaderno Competencial</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    /* --- paleta --- */
+    --paper:#F7F5F0;
+    --paper-2:#F1EDE4;
+    --white:#FFFFFF;
+    --petroli:#164E63;
+    --petroli-700:#0E3A4B;
+    --petroli-300:#3F7F95;
+    --petroli-50:#E6EEF1;
+    --terracota:#C76B4A;
+    --terracota-700:#A2472C;
+    --terracota-50:#F7EAE3;
+    --mostassa:#E5B94C;
+    --mostassa-700:#8A6614;
+    --mostassa-50:#FBF3DE;
+    --salvia:#78927D;
+    --salvia-700:#44604B;
+    --salvia-50:#E9EFE9;
+    --ink:#263238;
+    --ink-soft:#55636A;
+    --ink-faint:#8B959A;
+    --line:#E4DFD3;
+    --line-soft:#EDE9DF;
+
+    /* --- niveles de logro --- */
+    --lvl-NA-bg:var(--terracota-50); --lvl-NA-fg:var(--terracota-700); --lvl-NA-solid:#C0573A;
+    --lvl-EP-bg:var(--mostassa-50); --lvl-EP-fg:var(--mostassa-700); --lvl-EP-solid:#D9A62F;
+    --lvl-AS-bg:var(--salvia-50);   --lvl-AS-fg:var(--salvia-700);   --lvl-AS-solid:#78927D;
+    --lvl-AE-bg:var(--petroli-50);  --lvl-AE-fg:var(--petroli);      --lvl-AE-solid:#164E63;
+
+    /* --- familias de color de las CE --- */
+    --ce-slate:#4E5F67; --ce-sage:#8CA391; --ce-sage-deep:#5C7A63;
+    --ce-petroli-light:#3F7F95; --ce-petroli:#164E63;
+    --ce-ochre:#D9A62F; --ce-ochre-deep:#A87C1C;
+    --ce-clay-light:#D8916F; --ce-clay:#C76B4A;
+
+    --shadow-sm:0 1px 2px rgba(38,50,56,.04), 0 2px 6px rgba(38,50,56,.04);
+    --shadow-md:0 1px 2px rgba(38,50,56,.03), 0 14px 30px -16px rgba(38,50,56,.22);
+    --radius:12px; --radius-sm:8px;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'DM Serif Display',Georgia,'Times New Roman',serif;font-weight:400;margin:0;text-wrap:balance;letter-spacing:-.01em;}
+  .mono,code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+  .num{font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+  a{color:var(--petroli);}
+  svg{display:block;}
+
+  .app{display:flex;min-height:100vh;}
+
+  /* ============ barra lateral ============ */
+  .nav{
+    width:246px;flex:0 0 246px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;padding:26px 16px 18px;gap:3px;
+    position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  .brand{padding:0 10px 22px;}
+  .brand .mark{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+  .brand .mark .sq{width:26px;height:26px;border-radius:7px;background:var(--petroli);display:grid;place-items:center;color:var(--paper);font-family:'DM Serif Display',serif;font-size:15px;line-height:1;padding-bottom:1px;}
+  .brand .mark .lab{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;}
+  .brand h1{font-size:21px;line-height:1.15;color:var(--petroli);}
+  .brand .sub{font-size:12.5px;color:var(--ink-faint);margin-top:6px;line-height:1.4;}
+
+  .navbtn{
+    display:flex;align-items:center;gap:11px;padding:9px 11px;border:none;background:transparent;
+    border-radius:var(--radius-sm);color:var(--ink-soft);font-size:14px;font-weight:500;
+    text-align:left;cursor:pointer;width:100%;transition:background .15s,color .15s;
+  }
+  .navbtn svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 18px;opacity:.85;}
+  .navbtn:hover{background:var(--paper-2);color:var(--ink);}
+  .navbtn.active{background:var(--petroli-50);color:var(--petroli);font-weight:600;}
+  .navbtn.active svg{opacity:1;}
+  .nav-foot{margin-top:auto;padding:14px 11px 0;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--ink-faint);line-height:1.5;}
+  .nav-foot .sig{margin-top:10px;padding-top:9px;border-top:1px solid var(--line-soft);font-size:11px;}
+  .nav-foot .sig a{color:var(--petroli);text-decoration:none;}
+  .nav-foot .sig a:hover{text-decoration:underline;}
+
+  .topbar{display:none;}
+
+  main{flex:1;min-width:0;padding:38px 44px 72px;max-width:1220px;}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .22s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.panel.active{animation:none;}}
+
+  /* ============ cabecera editorial ============ */
+  .masthead{margin-bottom:30px;max-width:66ch;}
+  .masthead .eyebrow{font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--petroli-300);font-weight:700;margin-bottom:9px;}
+  .masthead h2{font-size:33px;line-height:1.1;}
+  .masthead .rule{margin:11px 0 13px;}
+  .masthead .rule svg{width:126px;height:7px;stroke:var(--mostassa);stroke-width:2.2;fill:none;stroke-linecap:round;}
+  .masthead p{margin:0;color:var(--ink-soft);font-size:14.5px;line-height:1.6;}
+
+  /* ============ tarjetas ============ */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;box-shadow:var(--shadow-sm);}
+  .card + .card{margin-top:18px;}
+  .cardhead{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .cardhead h3{font-size:19px;color:var(--ink);}
+  .cardhead .hint{font-size:12.5px;color:var(--ink-faint);}
+  .cardnote{font-size:13px;color:var(--ink-soft);line-height:1.6;margin:-6px 0 14px;max-width:72ch;}
+  .grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
+
+  /* ============ formularios ============ */
+  label.field{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:7px;}
+  textarea,input[type=text],select{
+    width:100%;border:1px solid var(--line);background:var(--paper);color:var(--ink);
+    border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:inherit;transition:border-color .15s,background .15s;
+  }
+  textarea:hover,input:hover,select:hover{border-color:var(--line-strong,#D6D0C2);}
+  textarea{min-height:150px;resize:vertical;font-family:'IBM Plex Mono';font-size:13px;line-height:1.7;}
+  input:focus,textarea:focus,select:focus,button:focus-visible,.lvl:focus-visible{outline:2px solid var(--petroli-300);outline-offset:2px;}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;border:1px solid var(--petroli);background:var(--petroli);
+    color:var(--paper);padding:10px 17px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;
+  }
+  .btn:hover{background:var(--petroli-700);border-color:var(--petroli-700);}
+  .btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .btn.outline{background:var(--white);color:var(--petroli);}
+  .btn.outline:hover{background:var(--petroli-50);}
+  .btn.quiet{background:transparent;border-color:transparent;color:var(--ink-faint);font-weight:500;padding:5px 9px;font-size:12.5px;}
+  .btn.quiet:hover{background:var(--paper-2);color:var(--terracota-700);}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+
+  /* ============ etiquetas ============ */
+  .tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.04em;padding:4px 10px;border-radius:99px;background:var(--paper-2);color:var(--ink-soft);}
+  .tag.petroli{background:var(--petroli-50);color:var(--petroli);}
+  .tag.ochre{background:var(--mostassa-50);color:var(--mostassa-700);}
+  .tag.clay{background:var(--terracota-50);color:var(--terracota-700);}
+  .tag.sage{background:var(--salvia-50);color:var(--salvia-700);}
+  .dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px;}
+
+  /* ============ niveles ============ */
+  .lvl{
+    display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:27px;padding:0 9px;
+    border-radius:6px;font-family:'IBM Plex Mono';font-size:11.5px;font-weight:500;letter-spacing:.03em;
+    border:1px solid transparent;cursor:pointer;user-select:none;transition:transform .1s;
+  }
+  .lvl:active{transform:scale(.94);}
+  .lvl-NA{background:var(--lvl-NA-bg);color:var(--lvl-NA-fg);}
+  .lvl-EP{background:var(--lvl-EP-bg);color:var(--lvl-EP-fg);}
+  .lvl-AS{background:var(--lvl-AS-bg);color:var(--lvl-AS-fg);}
+  .lvl-AE{background:var(--lvl-AE-bg);color:var(--lvl-AE-fg);}
+  .lvl-none{background:var(--paper);color:var(--ink-faint);border:1px dashed var(--line);}
+  .legend{display:flex;gap:9px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--ink-soft);}
+  .legend .item{display:inline-flex;align-items:center;gap:7px;margin-right:8px;}
+  .legend .lvl{pointer-events:none;cursor:default;}
+
+  /* ============ tablas ============ */
+  table{border-collapse:collapse;width:100%;font-size:13.5px;}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line-soft);vertical-align:middle;}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700;}
+  tbody tr:last-child td{border-bottom:none;}
+  .tablewrap{overflow-x:auto;}
+
+  .heat{border-collapse:separate;border-spacing:4px;}
+  .heat th{padding:4px;text-align:center;}
+  .heat th.corner{text-align:left;}
+  .heat .cehead{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .heat .cehead svg{width:15px;height:15px;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .heat .cehead .c{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--ink-faint);letter-spacing:0;}
+  .heat td.name{font-weight:600;font-size:13px;white-space:nowrap;border-bottom:none;padding-left:2px;}
+  .heatcell{width:48px;height:32px;display:grid;place-items:center;border-radius:7px;font-family:'IBM Plex Mono';font-size:11px;font-weight:500;}
+  .heatcell.nodata{background:var(--paper);color:var(--ink-faint);border:1px dashed var(--line);}
+
+  /* ============ criterios ============ */
+  .critline{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-soft);}
+  .critline:last-child{border-bottom:none;}
+  .critline .code{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--petroli-300);min-width:32px;padding-top:2px;font-weight:500;}
+  .critline .txt{font-size:13.5px;color:var(--ink-soft);flex:1;line-height:1.55;}
+  .flagbox{background:var(--mostassa-50);border:1px solid #EFDFB4;border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;}
+  .flagbox:last-child{margin-bottom:0;}
+
+  details.ce{border:1px solid var(--line);border-radius:var(--radius-sm);margin-bottom:9px;background:var(--white);overflow:hidden;}
+  details.ce[open]{box-shadow:var(--shadow-sm);}
+  details.ce summary{cursor:pointer;padding:13px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:11px;list-style:none;}
+  details.ce summary::-webkit-details-marker{display:none;}
+  details.ce summary svg.cei{width:17px;height:17px;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 17px;}
+  details.ce summary .name{flex:1;}
+  details.ce summary .code{font-family:'IBM Plex Mono';font-size:12px;font-weight:500;}
+  details.ce .body{padding:2px 16px 14px 44px;}
+  details.ce .desc{font-size:13px;color:var(--ink-soft);line-height:1.6;margin:0 0 12px;font-style:italic;}
+
+  /* ============ tarjetas de SA ============ */
+  .sagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media (max-width:1000px){.sagrid{grid-template-columns:1fr;}}
+  .sacard{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:0;box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column;}
+  .sacard .band{height:4px;}
+  .sacard .inner{padding:19px 21px 21px;display:flex;flex-direction:column;gap:11px;height:100%;}
+  .sacard .trim{display:flex;justify-content:space-between;align-items:center;}
+  .sacard h4{font-size:19px;line-height:1.2;}
+  .sacard .prod{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .sacard .prod strong{color:var(--ink);font-weight:600;}
+  .sacard .ces{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px;}
+  .cechip{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono';font-size:10.5px;padding:3px 8px;border-radius:99px;background:var(--paper);border:1px solid var(--line-soft);color:var(--ink-soft);}
+
+  /* ============ informe ============ */
+  .kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+  @media (max-width:1000px){.kpi{grid-template-columns:repeat(2,1fr);}}
+  .kpi .k{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);}
+  .kpi .k.lead{background:var(--petroli);border-color:var(--petroli);}
+  .kpi .k .n{font-family:'DM Serif Display',serif;font-size:31px;line-height:1;font-variant-numeric:tabular-nums;color:var(--petroli);}
+  .kpi .k.lead .n{color:var(--paper);}
+  .kpi .k .l{font-size:11.5px;color:var(--ink-faint);margin-top:7px;line-height:1.35;}
+  .kpi .k.lead .l{color:#B9CFD8;}
+
+  .bar-row{display:grid;grid-template-columns:150px 1fr 46px;align-items:center;gap:14px;padding:8px 0;}
+  .bar-row .lbl{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;}
+  .bar-row .lbl svg{width:15px;height:15px;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 15px;}
+  .bar-track{height:9px;border-radius:99px;background:var(--paper-2);overflow:hidden;}
+  .bar-fill{height:100%;border-radius:99px;transition:width .3s ease;}
+  .bar-row .val{font-family:'IBM Plex Mono';font-size:12px;text-align:right;color:var(--ink-soft);}
+  @media (max-width:620px){.bar-row{grid-template-columns:110px 1fr 40px;gap:9px;}}
+
+  /* ============ estados vacíos ============ */
+  .empty{padding:42px 22px;text-align:center;color:var(--ink-faint);font-size:13.5px;}
+  .empty svg{width:38px;height:38px;margin:0 auto 12px;stroke:var(--line-strong,#D3CDBF);stroke-width:1.3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+  .checkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px 16px;}
+  .checkgrid label{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-soft);cursor:pointer;padding:2px 0;}
+  .checkgrid input{accent-color:var(--petroli);width:15px;height:15px;}
+  .checkgrid .mono{font-size:11.5px;color:var(--petroli-300);}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);
+    padding:11px 20px;border-radius:var(--radius-sm);font-size:13.5px;box-shadow:var(--shadow-md);
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-5px);}
+
+  @media (max-width:920px){
+    .nav{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform .2s;z-index:50;box-shadow:var(--shadow-md);}
+    .nav.open{transform:none;}
+    .topbar{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;}
+    .topbar .t{font-family:'DM Serif Display',serif;font-size:18px;color:var(--petroli);}
+    .topbar .menubtn{margin-left:auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;color:var(--ink-soft);cursor:pointer;}
+    main{padding:24px 18px 60px;}
+    .masthead h2{font-size:27px;}
+    .kpi{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+
+</head>
+<body>
+<div class="app">
+  <nav class="nav" id="nav">
+    <div class="brand">
+      <div class="mark">
+        <div class="sq">Q</div>
+        <div class="lab">Fundació Flors</div>
+      </div>
+      <h1>Cuaderno<br>competencial</h1>
+      <div class="sub">Lengua Castellana y Literatura · 2.º de ESO</div>
+    </div>
+    <button class="navbtn active" data-tab="alumnat"></button>
+    <button class="navbtn" data-tab="curriculum"></button>
+    <button class="navbtn" data-tab="activitat"></button>
+    <button class="navbtn" data-tab="seguiment"></button>
+    <button class="navbtn" data-tab="informe"></button>
+    <button class="navbtn" data-tab="normativa"></button>
+    <button class="navbtn" data-tab="exportar"></button>
+    <div class="nav-foot">Los datos se guardan solo en este navegador. Exporta una copia de vez en cuando.
+      <div class="sig">Sandra Fortanet · <a href="https://sandrafortanet.netlify.app/" target="_blank" rel="noopener">@sanforbel</a></div>
+    </div>
+  </nav>
+
+  <div class="topbar">
+    <div class="t">Cuaderno competencial</div>
+    <button class="menubtn" id="menuBtn">Menú</button>
+  </div>
+
+  <main>
+    <!-- ============ ALUMNAT ============ -->
+    <section class="panel active" data-panel="alumnat">
+      <div class="masthead">
+        <div class="eyebrow">Punto de partida</div>
+        <h2>Alumnado</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>Pega la lista del grupo, una entrada por línea. Se recomiendan iniciales o un código —nunca el nombre completo— para trabajar con datos seudonimizados.</p>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="cardhead"><h3>Lista del grupo</h3><span class="tag petroli" id="countPill">0 alumnos</span></div>
+          <label class="field" for="rosterInput">Iniciales o códigos</label>
+          <textarea id="rosterInput" placeholder="AMG&#10;JBT&#10;LCP"></textarea>
+          <div class="btnrow" style="margin-top:12px;">
+            <button class="btn" id="saveRoster">Guardar lista</button>
+            <button class="btn outline" id="loadExample">Cargar ejemplo</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cardhead"><h3>Grupo actual</h3><span class="hint">calificación calculada hasta ahora</span></div>
+          <div id="rosterView" class="tablewrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CURRÍCULUM ============ -->
+    <section class="panel" data-panel="curriculum">
+      <div class="masthead">
+        <div class="eyebrow">Decreto 107/2022 · Orden 19/2023</div>
+        <h2>Currículo de referencia</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>Las competencias específicas y los criterios de evaluación literales de tu programación de 2.º, con el bloque de calificación que les corresponde según el apartado 8.2.</p>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Las tres situaciones de aprendizaje</h3><span class="hint">curso 2026/2027</span></div>
+        <div class="sagrid" id="saGrid"></div>
+      </div>
+
+      <div class="card" id="unassignedCard" style="display:none;">
+        <div class="cardhead"><h3>Criterios sin bloque de calificación</h3><span class="tag ochre" id="unCount"></span></div>
+        <p class="cardnote">Estos criterios están en el currículo y en la programación, pero la tabla 8.2 no los asigna a ninguno de los cuatro bloques. Puedes seguir marcándolos —quedan en el mapa competencial y en el informe—, pero no cuentan en la calificación final hasta que los asignes aquí debajo.</p>
+        <div id="unassignedList"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Bloques de calificación</h3><span class="hint">acuerdo del departamento para 1.º y 2.º de ESO</span></div>
+        <div class="tablewrap"><table id="blocksTable"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Competencias específicas y criterios</h3><span class="hint">haz clic para desplegar</span></div>
+        <div id="ceList"></div>
+      </div>
+    </section>
+
+    <!-- ============ ACTIVITAT ============ -->
+    <section class="panel" data-panel="activitat">
+      <div class="masthead">
+        <div class="eyebrow">Evaluación del día a día</div>
+        <h2>Registrar una actividad</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>Cada examen, producto de SA, observación o tarea es una actividad: elige qué criterios evalúa y marca el nivel alcanzado por cada alumno o alumna.</p>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Datos de la actividad</h3></div>
+        <div class="grid2">
+          <div>
+            <label class="field" for="actName">Nombre de la actividad</label>
+            <input type="text" id="actName" placeholder="Prueba U2 · El sustantivo y el adjetivo">
+          </div>
+          <div>
+            <label class="field" for="actSA">Situación de aprendizaje</label>
+            <select id="actSA"></select>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:14px;">
+          <div>
+            <label class="field" for="actBlock">Instrumento · bloque de calificación</label>
+            <select id="actBlock"></select>
+          </div>
+          <div>
+            <label class="field" for="actDate">Fecha</label>
+            <input type="text" id="actDate" placeholder="14 de octubre">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Criterios que evalúa</h3><span class="tag" id="critCountPill">0 seleccionados</span></div>
+        <p class="cardnote">Se marcan por defecto los criterios que comparten la SA y el bloque elegidos. Ajusta la selección si la actividad cubre más o menos.</p>
+        <div class="checkgrid" id="critPicker"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead">
+          <h3>Nivel alcanzado</h3>
+          <div class="btnrow">
+            <span class="hint">aplicar a todo el grupo:</span>
+            <button class="lvl lvl-NA" data-bulk="NA">NA</button>
+            <button class="lvl lvl-EP" data-bulk="EP">EP</button>
+            <button class="lvl lvl-AS" data-bulk="AS">AS</button>
+            <button class="lvl lvl-AE" data-bulk="AE">AE</button>
+          </div>
+        </div>
+        <div class="tablewrap"><table id="markTable"></table></div>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn" id="saveActivity">Guardar actividad</button>
+        <span id="actMsg" class="hint"></span>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <div class="cardhead"><h3>Actividades registradas</h3></div>
+        <div class="tablewrap"><table id="actTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ============ SEGUIMENT ============ -->
+    <section class="panel" data-panel="seguiment">
+      <div class="masthead">
+        <div class="eyebrow">Mapa del grupo</div>
+        <h2>Seguimiento</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>Nivel de logro por competencia específica: la media de todos los criterios registrados hasta ahora de cada CE.</p>
+      </div>
+      <div class="card" style="padding:16px 22px;">
+        <div class="legend">
+          <span class="item"><span class="lvl lvl-NA">NA</span> No alcanzado</span>
+          <span class="item"><span class="lvl lvl-EP">EP</span> En proceso</span>
+          <span class="item"><span class="lvl lvl-AS">AS</span> Alcanzado</span>
+          <span class="item"><span class="lvl lvl-AE">AE</span> Con excelencia</span>
+          <span class="item"><span class="lvl lvl-none">–</span> Sin datos</span>
+        </div>
+        <div id="covNote" style="margin-top:14px;padding-top:13px;border-top:1px solid var(--line-soft);display:flex;align-items:center;flex-wrap:wrap;"></div>
+      </div>
+      <div class="card">
+        <div class="tablewrap"><table class="heat" id="heatTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ============ INFORME ============ -->
+    <section class="panel" data-panel="informe">
+      <div class="masthead">
+        <div class="eyebrow">Alumno por alumno</div>
+        <h2>Informe y recuperación</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>El mapa competencial de cada alumno o alumna, la calificación que resulta por bloques y los criterios concretos que le quedan pendientes.</p>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <label class="field" for="studentPick">Alumno/a</label>
+        <select id="studentPick" style="max-width:280px;"></select>
+      </div>
+      <div id="informeBody"></div>
+    </section>
+
+    <!-- ============ NORMATIVA ============ -->
+    <section class="panel" data-panel="normativa">
+      <div class="masthead">
+        <div class="eyebrow">Por qué este cuaderno evalúa bien</div>
+        <h2>Fundamentación normativa</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>Cada decisión de diseño de esta herramienta responde a un artículo concreto de la normativa vigente. Esta pantalla es la justificación que se puede mostrar en una formación o ante una inspección.</p>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Marco normativo aplicable</h3><span class="hint">ESO · Comunitat Valenciana · curso 2026/2027</span></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Norma</th><th>Qué regula, en lo que nos afecta</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600">LO 3/2020 (LOMLOE)</td><td>Modelo de enseñanza por competencias y evaluación criterial.</td></tr>
+            <tr><td style="font-weight:600">RD 217/2022</td><td>Enseñanzas mínimas de la ESO: definición de criterios de evaluación, evaluación continua, formativa e integradora, derecho a la evaluación objetiva y expresión de los resultados.</td></tr>
+            <tr><td style="font-weight:600">Decreto 107/2022, mod. Decreto 66/2024</td><td>Currículo de la ESO en la Comunitat Valenciana: competencias específicas, criterios de evaluación y saberes básicos literales que carga esta herramienta.</td></tr>
+            <tr><td style="font-weight:600">Orden 19/2023</td><td>Procedimientos de evaluación, promoción y titulación en la Comunitat Valenciana.</td></tr>
+            <tr><td style="font-weight:600">Decreto 104/2018 · Orden 20/2019</td><td>Respuesta educativa para la inclusión: niveles de respuesta y medidas de refuerzo.</td></tr>
+            <tr><td style="font-weight:600">RGPD · LO 3/2018</td><td>Protección de datos del alumnado: minimización y seudonimización.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Trazabilidad: qué hace la herramienta y en qué se basa</h3></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Decisión de la herramienta</th><th>Fundamento</th></tr></thead>
+          <tbody>
+            <tr><td>Se evalúa marcando el nivel alcanzado <strong>criterio a criterio</strong>, no poniendo una nota global a cada instrumento.</td>
+                <td>Los criterios de evaluación son los «referentes que indican los niveles de desempeño esperados en el alumnado» (RD 217/2022, art. 2). El instrumento es el medio para recoger la evidencia; el referente es el criterio.</td></tr>
+            <tr><td>Cada criterio puede recibir evidencia de <strong>varias actividades</strong> a lo largo del curso, y el cuaderno hace la media.</td>
+                <td>«La evaluación será continua, formativa e integradora» (RD 217/2022, art. 15).</td></tr>
+            <tr><td>El informe individual lista <strong>los criterios concretos no alcanzados</strong> y ese es el plan de recuperación.</td>
+                <td>Cuando se detectan dificultades deben establecerse «medidas de refuerzo educativo… en cualquier momento del curso, tan pronto como se detecten» (RD 217/2022, art. 15); planes de refuerzo (art. 16.3). La recuperación es de criterios pendientes, no la repetición de una prueba.</td></tr>
+            <tr><td>La calificación se expresa con el <strong>término cualitativo</strong> (IN, SU, BI, NT, SB) y un número entero del 1 al 10; la media con decimales solo se muestra como valor de trabajo.</td>
+                <td>Los resultados de la evaluación se expresan en los términos Insuficiente, Suficiente, Bien, Notable y Sobresaliente (RD 217/2022, art. 31), acompañados de la calificación numérica que establece la normativa autonómica.</td></tr>
+            <tr><td>El cuaderno muestra la <strong>cobertura de la evaluación</strong>: qué criterios y qué CE no tienen todavía ninguna evidencia.</td>
+                <td>Todas las competencias específicas de la materia deben ser objeto de evaluación a lo largo del curso; dejar alguna sin evidencia es la incidencia más frecuente en una revisión.</td></tr>
+            <tr><td>Cada alumno/a tiene un informe imprimible con el detalle por criterio.</td>
+                <td>Derecho del alumnado a que su dedicación, esfuerzo y rendimiento sean valorados con objetividad (RD 217/2022, art. 28), y derecho a conocer los criterios y a solicitar su revisión.</td></tr>
+            <tr><td>El alumnado se identifica con <strong>iniciales o código</strong> y los datos no salen del navegador.</td>
+                <td>Principio de minimización de datos (RGPD, art. 5.1.c) y LO 3/2018.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>El punto delicado: los porcentajes por instrumento</h3><span class="tag ochre">leedlo antes de la formación</span></div>
+        <p class="cardnote">El acuerdo del departamento (exámenes y proyectos 50 %, competencia cívica 20 %, trabajo en clase 20 %, actividades simples 10 %) reparte la nota <strong>por instrumentos</strong>. La normativa, en cambio, fija como referente <strong>los criterios de evaluación</strong>: un porcentaje por instrumento no tiene, por sí mismo, fundamento normativo, y es lo que suele cuestionarse en una revisión.</p>
+        <p class="cardnote">Por eso esta herramienta calcula y muestra <strong>las dos calificaciones a la vez</strong>: la competencial —media de las competencias específicas evaluadas, que es la coherente con la norma— y la del departamento, para que este curso la nota que se entrega al centro siga siendo la pactada. Compararlas curso a curso es, precisamente, el argumento para proponer el cambio en el departamento: si las dos cifras se parecen, el peso por instrumentos era inocuo; si divergen, el reparto estaba desplazando la calificación respecto de lo que dice el currículo.</p>
+        <p class="cardnote" style="margin-bottom:0">Una nota para 3.º y 4.º: el 10 % de «actitud» de vuestro acuerdo no se sostiene como elemento de calificación si no se ancla en criterios de evaluación concretos —en 1.º y 2.º esto ya está resuelto porque la «competencia cívica» se asocia a los criterios de la CE6, la CE1 y el criterio 4.4.</p>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Verificación de las fuentes</h3></div>
+        <p class="cardnote" style="margin-bottom:0">Los artículos del RD 217/2022 citados aquí se han comprobado sobre el texto consolidado del BOE. Las referencias al Decreto 107/2022, al Decreto 66/2024 y a la Orden 19/2023 proceden de la programación didáctica del centro, que ya las cita: conviene contrastarlas con la copia del DOGV antes de usarlas en una sesión pública, porque los servidores oficiales no permiten la consulta automatizada.</p>
+      </div>
+    </section>
+
+    <!-- ============ EXPORTAR ============ -->
+    <section class="panel" data-panel="exportar">
+      <div class="masthead">
+        <div class="eyebrow">Copias y traspaso</div>
+        <h2>Exportar y guardar</h2>
+        <div class="rule"><svg viewBox="0 0 126 7" preserveAspectRatio="none"><path d="M1 4.4C22 2.1 44 5.4 63 3.2 82 1.1 104 4.6 125 2.6"/></svg></div>
+        <p>El cuaderno se guarda automáticamente en este navegador. Exporta un archivo de vez en cuando para tener copia o para continuar en otro ordenador.</p>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="cardhead"><h3>Copia de seguridad</h3></div>
+          <p class="cardnote">Un archivo .json con todo: alumnado, actividades y marcas. Impórtalo para continuar donde lo dejaste.</p>
+          <div class="btnrow">
+            <button class="btn" id="exportJSON">Exportar copia</button>
+            <label class="btn outline" style="cursor:pointer;">Importar copia<input type="file" id="importJSON" accept=".json" style="display:none;"></label>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cardhead"><h3>Notas para Classroom</h3></div>
+          <p class="cardnote">Classroom no admite subir un CSV de notas directamente: hay que pegarlas en el libro de calificaciones (o usar un complemento como ImExClass). Este archivo te deja la nota final y el desglose por bloques listos para copiar.</p>
+          <div class="btnrow"><button class="btn" id="exportGrades">Exportar notas (.csv)</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardhead"><h3>Detalle por criterio</h3></div>
+        <p class="cardnote">Todas las marcas, alumno por alumno y criterio por criterio, para archivar o para llevarlo a una reunión de departamento.</p>
+        <div class="btnrow"><button class="btn outline" id="exportDetail">Exportar detalle (.csv)</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== ICONOS ===================== */
+const I = {
+  users:'<path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"/><circle cx="9.5" cy="7" r="3.5"/><path d="M21 19v-1a4 4 0 0 0-3-3.9M16.5 3.8a4 4 0 0 1 0 6.4"/>',
+  book:'<path d="M12 6.6S10 5 6.5 5H3v13h3.5C10 18 12 19.6 12 19.6M12 6.6S14 5 17.5 5H21v13h-3.5C14 18 12 19.6 12 19.6M12 6.6v13"/>',
+  pencil:'<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 6.5l3 3"/>',
+  grid:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  report:'<path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4"/><path d="M9.5 12.5h5M9.5 16h5"/>',
+  archive:'<path d="M12 3.5v9.5M12 13l3.2-3.2M12 13 8.8 9.8"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>',
+  globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.3 5.3 3.3 8.5s-1 6.1-3.3 8.5c-2.3-2.4-3.3-5.3-3.3-8.5s1-6.1 3.3-8.5"/>',
+  wave:'<path d="M4 10.5v3M8 7v10M12 4.5v15M16 8v8M20 10.5v3"/>',
+  speech:'<path d="M20.5 11.5a7.5 7.5 0 0 1-10.8 6.7L4.5 19.5l1.4-4.6A7.5 7.5 0 1 1 20.5 11.5"/>',
+  pen:'<path d="M4 20h3.5L18 9.5a2 2 0 0 0-2.8-2.8L4.7 17.2z"/><path d="M14.5 7l2.8 2.8"/>',
+  chats:'<path d="M3.5 9.5a4 4 0 0 1 4-4h4a4 4 0 0 1 0 8H9l-3 2.5v-2.6a4 4 0 0 1-2.5-3.9"/><path d="M15 8.5h1.5a4 4 0 0 1 0 8H16l-2.5 2.2V16"/>',
+  exchange:'<path d="M4 8.5h14l-3.2-3.2M20 15.5H6l3.2 3.2"/>',
+  bookmark:'<path d="M7 3.5h10v17l-5-3.8-5 3.8z"/>',
+  quill:'<path d="M20.5 3.5c-8.5 0-13.5 4.2-13.5 10.3 0 2 .6 3.6 1.6 4.7M20.5 3.5c0 8.3-4.2 12.4-10.4 12.4H8.6M3.5 20.5l6.8-6.8"/>',
+  notebook:'<path d="M7 4h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M5 8.5h3M5 12h3M5 15.5h3"/>',
+  seal:'<path d="M12 3.2 5 5.8v6c0 4.1 3 7.3 7 8.9 4-1.6 7-4.8 7-8.9v-6z"/><path d="M9.2 12.2 11 14l3.8-4"/>'
+};
+function icon(name, cls, style){
+  return '<svg class="'+(cls||'')+'" viewBox="0 0 24 24" '+(style?'style="'+style+'"':'')+' aria-hidden="true">'+I[name]+'</svg>';
+}
+
+/* ===================== CURRÍCULO ===================== */
+/* Fuente: Programacion_Lengua_Castellana_2ESO_2026-27 (Decreto 107/2022, mod. Decreto 66/2024) */
+const CE = [
+ {code:'CE1', name:'Multilingüismo y multiculturalidad', color:'var(--ce-slate)', icon:'globe', saber:'B1',
+  desc:'Describir y apreciar la diversidad lingüística y cultural de la Comunidad Valenciana, de España y del mundo.',
+  criteria:[
+   {code:'1.1', text:'Identificar y valorar las lenguas de España y del mundo, y las variedades lingüísticas de las dos lenguas oficiales de la Comunidad Valenciana.'},
+   {code:'1.2', text:'Mostrar interés por el uso del valenciano en las diferentes situaciones comunicativas del ámbito personal, social y educativo.'},
+   {code:'1.3', text:'Mostrar interés y respeto por las variedades lingüísticas, contrastando algunas de sus características en diferentes contextos de uso.'},
+   {code:'1.4', text:'Identificar prejuicios y estereotipos lingüísticos a partir de la observación de la diversidad lingüística del entorno.'},
+   {code:'1.5', text:'Reflexionar y ejemplificar, con cierta autonomía, aspectos del funcionamiento de las lenguas, a partir de la observación y comparación entre ellas.'}
+  ]},
+ {code:'CE2', name:'Comprensión oral y multimodal', color:'var(--ce-sage)', icon:'wave', saber:'B2',
+  desc:'Comprender, interpretar y valorar, de manera autónoma, textos orales y multimodales.',
+  criteria:[
+   {code:'2.1', text:'Escuchar de forma activa, interpretar y valorar, con progresiva autonomía, textos orales y multimodales de géneros, tipologías y registros diferentes.'},
+   {code:'2.2', text:'Interpretar el sentido global y las ideas principales y secundarias de textos orales y multimodales.'},
+   {code:'2.3', text:'Extraer e interpretar información (explícita e implícita) de los textos orales y multimodales, valorando el propósito del texto y la intención del emisor.'}
+  ]},
+ {code:'CE3', name:'Comprensión escrita y multimodal', color:'var(--ce-sage-deep)', icon:'book', saber:'B2',
+  desc:'Comprender, interpretar y valorar, de manera autónoma, textos escritos y multimodales.',
+  criteria:[
+   {code:'3.1', text:'Leer, interpretar y valorar, con progresiva autonomía, textos escritos y multimodales de géneros, tipologías y registros diferentes.'},
+   {code:'3.2', text:'Aplicar, con progresiva autonomía, estrategias para comprender el sentido global, distinguir ideas principales de secundarias e interpretar información explícita e implícita.'},
+   {code:'3.3', text:'Identificar las tipologías textuales y los géneros discursivos, reconociendo la estructura y las características lingüísticas de cada tipo de texto.'},
+   {code:'3.4', text:'Localizar, seleccionar y contrastar información procedente de diferentes fuentes, evaluando su fiabilidad, en textos multimodales en medios digitales.'},
+   {code:'3.5', text:'Aplicar estrategias para la busca, selección, gestión y edición de la información de manera responsable, citando las fuentes.'}
+  ]},
+ {code:'CE4', name:'Expresión oral', color:'var(--ce-petroli-light)', icon:'speech', saber:'B2',
+  desc:'Producir mensajes orales con coherencia, cohesión y adecuación, fluidez y corrección.',
+  criteria:[
+   {code:'4.1', text:'Producir, con progresiva autonomía, discursos orales ajustados a la situación comunicativa, con adecuación y coherencia, aportando su propio punto de vista.'},
+   {code:'4.2', text:'Producir discursos orales con una pronunciación correcta y una entonación adecuada, utilizando elementos prosódicos y recursos no verbales.'},
+   {code:'4.3', text:'Realizar producciones orales con un registro estándar, un lenguaje no discriminatorio y un vocabulario preciso y ajustado a la norma.'},
+   {code:'4.4', text:'Seleccionar y contrastar información de diferentes fuentes y compartir oralmente los resultados con un punto de vista personal y respetuoso.'}
+  ]},
+ {code:'CE5', name:'Expresión escrita y multimodal', color:'var(--ce-petroli)', icon:'pen', saber:'B2',
+  desc:'Producir textos escritos y multimodales coherentes, cohesionados, adecuados y correctos.',
+  criteria:[
+   {code:'5.1', text:'Producir, con progresiva autonomía, textos escritos y multimodales que respondan a la situación comunicativa con adecuación, coherencia, cohesión y corrección.'},
+   {code:'5.2', text:'Utilizar un lenguaje no discriminatorio, detectando los posibles usos manipuladores de la lengua durante el proceso de composición escrita.'},
+   {code:'5.3', text:'Utilizar, de forma reflexiva e incorporando progresivamente metalenguaje, los conocimientos lingüísticos, textuales y discursivos necesarios.'},
+   {code:'5.4', text:'Planificar, textualizar, revisar y editar, con progresiva autonomía, durante el proceso de escritura mediante estrategias gradualmente complejas.'}
+  ]},
+ {code:'CE6', name:'Interacción oral y escrita', color:'var(--ce-ochre)', icon:'chats', saber:'B2',
+  desc:'Interactuar de manera oral, escrita y multimodal, de forma progresivamente autónoma.',
+  criteria:[
+   {code:'6.1', text:'Interactuar oralmente, con progresiva autonomía, aplicando la escucha activa y utilizando un vocabulario preciso, la cortesía lingüística y la etiqueta digital.'},
+   {code:'6.2', text:'Identificar y rechazar los usos discriminatorios y manipuladores de la lengua a partir del análisis de los elementos verbales y no verbales del discurso.'},
+   {code:'6.3', text:'Utilizar, con ayuda puntual, estrategias para la gestión dialogada de conflictos en el ámbito personal, educativo y social.'},
+   {code:'6.4', text:'Interactuar en textos escritos y multimodales de manera asíncrona y síncrona, mostrando empatía y respeto por las ideas de los interlocutores.'}
+  ]},
+ {code:'CE7', name:'Mediación', color:'var(--ce-ochre-deep)', icon:'exchange', saber:'B2',
+  desc:'Mediar entre interlocutores aplicando estrategias de adaptación, simplificación y reformulación del lenguaje.',
+  criteria:[
+   {code:'7.1', text:'Mostrar interés por participar en la solución de problemas de comprensión recíproca entre hablantes de lenguas o variedades lingüísticas diferentes.'},
+   {code:'7.2', text:'Comprender, comunicar y describir textos de complejidad media, o explicar conceptos, combinando su repertorio lingüístico (L1-L1, L1-L2, L2-L1).'},
+   {code:'7.3', text:'Seleccionar y aplicar estrategias de simplificación y adaptación de la lengua que faciliten la comprensión y expresión en distintas lenguas de su repertorio.'}
+  ]},
+ {code:'CE8', name:'Lectura autónoma', color:'var(--ce-clay-light)', icon:'bookmark', saber:'B3',
+  desc:'Leer obras y textos de carácter diverso y de complejidad progresiva, seleccionados con autonomía.',
+  criteria:[
+   {code:'8.1', text:'Leer obras diversas y textos escritos y multimodales, seleccionando con progresiva autonomía aquellos que mejor se ajustan a sus gustos e intereses.'},
+   {code:'8.2', text:'Dejar constancia del propio itinerario lector y de las experiencias lectoras.'},
+   {code:'8.3', text:'Compartir las experiencias de lectura, participando en comunidades lectoras y relacionando el sentido de la obra con la propia experiencia.'}
+  ]},
+ {code:'CE9', name:'Competencia literaria', color:'var(--ce-clay)', icon:'quill', saber:'B3',
+  desc:'Leer y producir textos literarios, contextualizados en la cultura y la sociedad, como fuente de placer y de conocimiento.',
+  criteria:[
+   {code:'9.1', text:'Leer y escuchar fragmentos literarios y obras completas, con progresiva autonomía y en contextos socioculturales próximos.'},
+   {code:'9.2', text:'Interpretar la información relevante de los textos literarios y aportar conclusiones de manera reflexiva.'},
+   {code:'9.3', text:'Establecer, de manera guiada, vínculos entre los textos leídos y otras manifestaciones artísticas en función de temas, estructuras o valores.'},
+   {code:'9.4', text:'Expresar opinión sobre textos y obras literarias, utilizando algunos recursos retóricos y el metalenguaje literario.'},
+   {code:'9.5', text:'Crear textos literarios sencillos de los géneros básicos, aplicando los recursos literarios básicos adecuados.'},
+   {code:'9.6', text:'Participar en manifestaciones literarias, recitales y representaciones teatrales partiendo de modelos.'}
+  ]}
+];
+const SABERS = {B1:'Bloque 1 · Las lenguas y sus hablantes', B2:'Bloque 2 · Estrategias comunicativas', B3:'Bloque 3 · Educación literaria'};
+
+const SA = [
+ {id:'SA1', name:'Comunicar para convivir', trim:'1.er', unitats:'U1–U3', ses:'≈33 sesiones', band:'var(--ce-sage)',
+  ce:['CE1','CE2','CE4','CE5','CE6'], producte:'Recetario digital de la vida cotidiana'},
+ {id:'SA2', name:'Tomar la palabra', trim:'2.º', unitats:'U4–U6', ses:'≈33 sesiones', band:'var(--ce-ochre)',
+  ce:['CE2','CE3','CE4','CE6','CE9'], producte:'Periódico digital con artículo de opinión'},
+ {id:'SA3', name:'El placer de la literatura', trim:'3.er', unitats:'U7–U9', ses:'≈30 sesiones', band:'var(--ce-clay)',
+  ce:['CE5','CE8','CE9','CE6'], producte:'Antología literaria multimodal y dramatización'}
+];
+
+const DEFAULT_BLOCKS = [
+ {id:'examens', name:'Exámenes y proyectos', pct:50, criteria:['2.1','2.2','2.3','3.1','3.2','3.3','4.1','4.2','4.3','5.1','5.4','9.1','9.2','9.3','9.4','9.5','9.6']},
+ {id:'civica',  name:'Competencia cívica',   pct:20, criteria:['1.2','1.3','6.1','6.2','6.3','6.4','4.4']},
+ {id:'classe',  name:'Trabajo en clase',     pct:20, criteria:['5.2','5.3','3.4','3.5','8.1','8.2','8.3']},
+ {id:'simples', name:'Actividades simples',  pct:10, criteria:['1.5','4.3','5.3']}
+];
+
+const LEVELS = [
+ {id:'NA', label:'No alcanzado', value:3},
+ {id:'EP', label:'En proceso', value:5},
+ {id:'AS', label:'Alcanzado', value:7.5},
+ {id:'AE', label:'Alcanzado con excelencia', value:9.5}
+];
+const LEVEL_BY_ID = Object.fromEntries(LEVELS.map(l=>[l.id,l]));
+const ALL_CRIT = CE.flatMap(ce=>ce.criteria.map(c=>({...c, ce:ce.code, color:ce.color})));
+const CE_BY_CODE = Object.fromEntries(CE.map(c=>[c.code,c]));
+
+/* ===================== ESTADO ===================== */
+const STORE_KEY = 'quadern-competencial-castella-2eso-v1';
+let APP = { students: [], activities: [], blocks: JSON.parse(JSON.stringify(DEFAULT_BLOCKS)) };
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ const p = JSON.parse(raw); APP = Object.assign({students:[],activities:[],blocks:JSON.parse(JSON.stringify(DEFAULT_BLOCKS))}, p); }
+  }catch(e){}
+}
+function persist(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(APP)); }catch(e){} }
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove('show'), 2300);
+}
+
+function criteriaOfBlock(id){ const b=APP.blocks.find(b=>b.id===id); return b?b.criteria.slice():[]; }
+function blockOfCriterion(code){ return APP.blocks.filter(b=>b.criteria.includes(code)).map(b=>b.id); }
+function unassignedCriteria(){
+  const assigned = new Set(APP.blocks.flatMap(b=>b.criteria));
+  return ALL_CRIT.filter(c=>!assigned.has(c.code));
+}
+function marksFor(student, critCode){
+  const vals=[];
+  APP.activities.forEach(act=>{
+    if(!act.criteria.includes(critCode)) return;
+    const lvl = act.marks && act.marks[student] && act.marks[student][critCode];
+    if(lvl) vals.push(LEVEL_BY_ID[lvl].value);
+  });
+  return vals;
+}
+function avgCriterion(s,c){ const v=marksFor(s,c); return v.length? v.reduce((a,b)=>a+b,0)/v.length : null; }
+function nearestLevel(value){
+  let best=LEVELS[0], bd=Infinity;
+  LEVELS.forEach(l=>{ const d=Math.abs(l.value-value); if(d<bd){bd=d;best=l;} });
+  return best;
+}
+function avgCE(s, ceCode){
+  const vals = CE_BY_CODE[ceCode].criteria.map(c=>avgCriterion(s,c.code)).filter(v=>v!==null);
+  return vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+}
+function blockGrade(s, id){
+  const vals = criteriaOfBlock(id).map(c=>avgCriterion(s,c)).filter(v=>v!==null);
+  return vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+}
+function finalGrade(s){
+  let w=0, wv=0;
+  APP.blocks.forEach(b=>{ const g=blockGrade(s,b.id); if(g!==null){ w+=b.pct; wv+=g*b.pct; } });
+  return w? wv/w : null;
+}
+function pendingCriteria(s){
+  return ALL_CRIT.map(c=>({...c, avg:avgCriterion(s,c.code)}))
+    .filter(c=>c.avg!==null && ['NA','EP'].includes(nearestLevel(c.avg).id));
+}
+
+/* --- expresión de la calificación (RD 217/2022, art. 31: IN/SU/BI/NT/SB) --- */
+const TERMS = [
+ {min:9, code:'SB', label:'Sobresaliente'},
+ {min:7, code:'NT', label:'Notable'},
+ {min:6, code:'BI', label:'Bien'},
+ {min:5, code:'SU', label:'Suficiente'},
+ {min:0, code:'IN', label:'Insuficiente'}
+];
+function term(v){ return TERMS.find(t=>v>=t.min); }
+function intGrade(v){ return Math.min(10, Math.max(1, Math.round(v))); }
+function termTagClass(code){ return code==='IN' ? 'clay' : (code==='SU'||code==='BI') ? 'ochre' : 'sage'; }
+
+/* --- calificación competencial: media de las CE evaluadas (referente = criterios) --- */
+function competencialGrade(s){
+  const vals = CE.map(c=>avgCE(s,c.code)).filter(v=>v!==null);
+  return vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+}
+/* --- cobertura de la evaluación: cuántos criterios tienen evidencia --- */
+function coverage(s){
+  const n = ALL_CRIT.filter(c=>avgCriterion(s,c.code)!==null).length;
+  return {n, total:ALL_CRIT.length, pct:Math.round(n/ALL_CRIT.length*100)};
+}
+function ceSenseEvidencia(s){ return CE.filter(c=>avgCE(s,c.code)===null).map(c=>c.code); }
+function groupCoverage(){
+  if(!APP.students.length) return {ce:[], pct:0};
+  const senseNingu = CE.filter(c=>APP.students.every(s=>avgCE(s,c.code)===null)).map(c=>c.code);
+  const marcats = ALL_CRIT.filter(c=>APP.students.some(s=>avgCriterion(s,c.code)!==null)).length;
+  return {ce:senseNingu, pct:Math.round(marcats/ALL_CRIT.length*100)};
+}
+function emptyState(text){
+  return '<div class="empty">'+icon('notebook')+text+'</div>';
+}
+function plural(n, sing, plur){ return n+' '+(n===1?sing:plur); }
+
+/* ===================== NAVEGACIÓN ===================== */
+const NAV = {alumnat:['users','Alumnado'], curriculum:['book','Currículo'], activitat:['pencil','Registrar actividad'],
+             seguiment:['grid','Seguimiento'], informe:['report','Informe individual'],
+             normativa:['seal','Fundamentación'], exportar:['archive','Exportar y guardar']};
+document.querySelectorAll('.navbtn').forEach(btn=>{
+  const [ic,label] = NAV[btn.dataset.tab];
+  btn.innerHTML = icon(ic)+'<span>'+label+'</span>';
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector('.panel[data-panel="'+btn.dataset.tab+'"]').classList.add('active');
+    document.getElementById('nav').classList.remove('open');
+    window.scrollTo({top:0,behavior:'instant'});
+    renderAll();
+  });
+});
+document.getElementById('menuBtn').addEventListener('click', ()=>document.getElementById('nav').classList.toggle('open'));
+
+/* ===================== ALUMNADO ===================== */
+function renderRoster(){
+  document.getElementById('countPill').textContent = plural(APP.students.length, 'alumno', 'alumnos');
+  const wrap = document.getElementById('rosterView');
+  if(!APP.students.length){ wrap.innerHTML = emptyState('Todavía no hay ningún grupo cargado.'); return; }
+  let html = '<table><thead><tr><th>#</th><th>Iniciales</th><th>Calificación competencial</th><th style="text-align:right">Cobertura</th></tr></thead><tbody>';
+  APP.students.forEach((s,i)=>{
+    const g = competencialGrade(s);
+    const cov = coverage(s);
+    const cell = g===null
+      ? '<span style="color:var(--ink-faint)">sin datos</span>'
+      : '<span class="num" style="font-weight:700;color:var(--petroli);margin-right:8px">'+intGrade(g)+'</span><span class="tag '+termTagClass(term(g).code)+'">'+term(g).label+'</span>';
+    html += '<tr><td class="mono" style="color:var(--ink-faint);font-size:11.5px;">'+String(i+1).padStart(2,'0')+'</td>'+
+            '<td style="font-weight:600">'+s+'</td><td>'+cell+'</td>'+
+            '<td class="num" style="text-align:right;color:var(--ink-faint);font-size:12.5px">'+cov.pct+' %</td></tr>';
+  });
+  wrap.innerHTML = html+'</tbody></table>';
+}
+document.getElementById('saveRoster').addEventListener('click', ()=>{
+  const lines = document.getElementById('rosterInput').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  APP.students = [...new Set(lines)];
+  persist(); toast('Lista guardada: '+plural(APP.students.length,'alumno','alumnos')); renderAll();
+});
+document.getElementById('loadExample').addEventListener('click', ()=>{
+  const ex=[]; const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(let i=0;i<31;i++) ex.push(L[i%26]+L[(i*3+1)%26]+L[(i*7+2)%26]);
+  document.getElementById('rosterInput').value = ex.join('\n');
+  toast('Ejemplo cargado: revísalo y pulsa «Guardar lista»');
+});
+
+/* ===================== CURRÍCULO ===================== */
+function renderSA(){
+  document.getElementById('saGrid').innerHTML = SA.map(sa=>
+    '<article class="sacard"><div class="band" style="background:'+sa.band+'"></div><div class="inner">'+
+      '<div class="trim"><span class="tag">'+sa.trim+' trimestre</span><span class="hint mono" style="font-size:11px;color:var(--ink-faint)">'+sa.unitats+'</span></div>'+
+      '<h4>'+sa.name+'</h4>'+
+      '<div class="prod"><strong>Producto final:</strong> '+sa.producte+'</div>'+
+      '<div class="prod" style="color:var(--ink-faint)">'+sa.ses+'</div>'+
+      '<div class="ces">'+sa.ce.map(c=>'<span class="cechip"><span class="dot" style="background:'+CE_BY_CODE[c].color+'"></span>'+c+'</span>').join('')+'</div>'+
+    '</div></article>').join('');
+}
+function renderCurriculum(){
+  renderSA();
+  const un = unassignedCriteria();
+  const card = document.getElementById('unassignedCard');
+  if(un.length){
+    card.style.display='';
+    document.getElementById('unCount').textContent = plural(un.length,'criterio','criterios');
+    document.getElementById('unassignedList').innerHTML = un.map(c=>
+      '<div class="flagbox"><div style="display:flex;gap:11px;align-items:flex-start;">'+
+      '<span class="code mono" style="color:var(--mostassa-700);font-size:11.5px;padding-top:2px;min-width:30px;">'+c.code+'</span>'+
+      '<div style="flex:1"><div style="font-size:13.5px;line-height:1.55;color:var(--ink-soft);"><strong style="color:var(--ink)">'+c.ce+'</strong> · '+c.text+'</div>'+
+      '<div style="margin-top:10px;"><select data-assign="'+c.code+'" style="max-width:260px;background:var(--white)"><option value="">Asignar a un bloque…</option>'+
+      APP.blocks.map(b=>'<option value="'+b.id+'">'+b.name+' ('+b.pct+'%)</option>').join('')+'</select></div></div></div></div>'
+    ).join('');
+    card.querySelectorAll('[data-assign]').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        if(!sel.value) return;
+        const b = APP.blocks.find(b=>b.id===sel.value);
+        if(!b.criteria.includes(sel.dataset.assign)) b.criteria.push(sel.dataset.assign);
+        persist(); toast(sel.dataset.assign+' asignado a «'+b.name+'»'); renderAll();
+      });
+    });
+  } else card.style.display='none';
+
+  document.getElementById('blocksTable').innerHTML =
+    '<thead><tr><th>Bloque</th><th>Peso</th><th>Criterios que incluye</th></tr></thead><tbody>'+
+    APP.blocks.map(b=>'<tr><td style="font-weight:600">'+b.name+'</td>'+
+      '<td><span class="tag petroli num">'+b.pct+' %</span></td>'+
+      '<td class="mono" style="color:var(--ink-faint);font-size:11.5px;line-height:1.7">'+b.criteria.join(' · ')+'</td></tr>').join('')+'</tbody>';
+
+  document.getElementById('ceList').innerHTML = CE.map(ce=>{
+    const blocks = [...new Set(ce.criteria.flatMap(c=>blockOfCriterion(c.code)))].map(id=>APP.blocks.find(b=>b.id===id).name);
+    return '<details class="ce"><summary>'+
+      icon(ce.icon,'cei','stroke:'+ce.color)+
+      '<span class="code" style="color:'+ce.color+'">'+ce.code+'</span>'+
+      '<span class="name">'+ce.name+'</span>'+
+      '<span class="tag">'+(blocks.length?blocks.join(' + '):'sin bloque')+'</span></summary>'+
+      '<div class="body"><p class="desc">'+ce.desc+'</p>'+
+      '<div style="margin-bottom:10px"><span class="tag sage">'+SABERS[ce.saber]+'</span></div>'+
+      ce.criteria.map(c=>'<div class="critline"><span class="code">'+c.code+'</span><span class="txt">'+c.text+'</span></div>').join('')+
+      '</div></details>';
+  }).join('');
+}
+
+/* ===================== ACTIVIDAD ===================== */
+function fillActivitySelectors(){
+  const saSel = document.getElementById('actSA');
+  const cur = saSel.value;
+  saSel.innerHTML = SA.map(s=>'<option value="'+s.id+'">'+s.id+' · '+s.name+' ('+s.trim+' trim.)</option>').join('');
+  if(cur) saSel.value = cur;
+  const bSel = document.getElementById('actBlock');
+  const curB = bSel.value;
+  bSel.innerHTML = APP.blocks.map(b=>'<option value="'+b.id+'">'+b.name+' · '+b.pct+' %</option>').join('');
+  if(curB) bSel.value = curB;
+}
+function defaultCriteriaForForm(){
+  const sa = SA.find(s=>s.id===document.getElementById('actSA').value);
+  const saCrit = new Set(sa ? sa.ce.flatMap(c=>CE_BY_CODE[c].criteria.map(x=>x.code)) : []);
+  const blockCrit = new Set(criteriaOfBlock(document.getElementById('actBlock').value));
+  return ALL_CRIT.filter(c=>saCrit.has(c.code) && blockCrit.has(c.code)).map(c=>c.code);
+}
+function renderCritPicker(preselect){
+  const sel = preselect || defaultCriteriaForForm();
+  const wrap = document.getElementById('critPicker');
+  wrap.innerHTML = ALL_CRIT.map(c=>
+    '<label><input type="checkbox" value="'+c.code+'" '+(sel.includes(c.code)?'checked':'')+'>'+
+    '<span class="dot" style="background:'+c.color+'"></span><span class="mono">'+c.code+'</span></label>'
+  ).join('');
+  wrap.querySelectorAll('input').forEach(cb=>cb.addEventListener('change', ()=>{ updateCritCount(); renderMarkTable(); }));
+  updateCritCount();
+}
+function updateCritCount(){
+  document.getElementById('critCountPill').textContent = plural(document.querySelectorAll('#critPicker input:checked').length,'seleccionado','seleccionados');
+}
+function selectedCriteria(){ return [...document.querySelectorAll('#critPicker input:checked')].map(i=>i.value); }
+
+let draftMarks = {};
+function renderMarkTable(){
+  const crits = selectedCriteria();
+  const table = document.getElementById('markTable');
+  if(!APP.students.length){ table.innerHTML='<tr><td>'+emptyState('Carga primero el grupo, en la pestaña «Alumnado».')+'</td></tr>'; return; }
+  if(!crits.length){ table.innerHTML='<tr><td>'+emptyState('Selecciona al menos un criterio.')+'</td></tr>'; return; }
+  let html = '<thead><tr><th>Alumno/a</th>'+crits.map(c=>'<th class="mono" style="color:'+ (ALL_CRIT.find(x=>x.code===c)||{}).color +'">'+c+'</th>').join('')+'</tr></thead><tbody>';
+  APP.students.forEach(s=>{
+    html += '<tr><td style="font-weight:600">'+s+'</td>'+crits.map(c=>{
+      const cur = (draftMarks[s]&&draftMarks[s][c]) || '';
+      return '<td>'+levelPicker(s,c,cur)+'</td>';
+    }).join('')+'</tr>';
+  });
+  table.innerHTML = html+'</tbody>';
+  table.querySelectorAll('[data-pick]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const [s,c] = el.dataset.pick.split('||');
+      const order = ['', 'NA','EP','AS','AE'];
+      const cur = (draftMarks[s]&&draftMarks[s][c]) || '';
+      draftMarks[s]=draftMarks[s]||{};
+      draftMarks[s][c]=order[(order.indexOf(cur)+1)%order.length];
+      renderMarkTable();
+    });
+  });
+}
+function levelPicker(s,c,cur){
+  return '<span class="'+(cur?'lvl lvl-'+cur:'lvl lvl-none')+'" data-pick="'+s+'||'+c+'" title="Haz clic para cambiar el nivel" tabindex="0">'+(cur||'–')+'</span>';
+}
+document.querySelectorAll('[data-bulk]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const crits = selectedCriteria();
+    APP.students.forEach(s=>{ draftMarks[s]=draftMarks[s]||{}; crits.forEach(c=>draftMarks[s][c]=btn.dataset.bulk); });
+    renderMarkTable();
+  });
+});
+document.getElementById('actSA').addEventListener('change', ()=>renderCritPicker());
+document.getElementById('actBlock').addEventListener('change', ()=>renderCritPicker());
+
+document.getElementById('saveActivity').addEventListener('click', ()=>{
+  const name = document.getElementById('actName').value.trim();
+  const crits = selectedCriteria();
+  if(!name){ toast('Pon un nombre a la actividad'); return; }
+  if(!APP.students.length){ toast('Carga primero el alumnado'); return; }
+  if(!crits.length){ toast('Selecciona al menos un criterio'); return; }
+  const marks = {};
+  APP.students.forEach(s=>{
+    marks[s] = Object.assign({}, draftMarks[s]||{});
+    Object.keys(marks[s]).forEach(c=>{ if(!marks[s][c]) delete marks[s][c]; });
+  });
+  APP.activities.push({
+    id:'act_'+Date.now(), name,
+    date: document.getElementById('actDate').value.trim(),
+    sa: document.getElementById('actSA').value,
+    block: document.getElementById('actBlock').value,
+    criteria: crits, marks
+  });
+  persist();
+  document.getElementById('actName').value='';
+  document.getElementById('actDate').value='';
+  draftMarks = {};
+  document.getElementById('actMsg').textContent = 'Actividad guardada';
+  setTimeout(()=>document.getElementById('actMsg').textContent='', 2600);
+  renderAll();
+});
+
+function renderActTable(){
+  const t = document.getElementById('actTable');
+  if(!APP.activities.length){ t.innerHTML='<tr><td>'+emptyState('Todavía no has registrado ninguna actividad.')+'</td></tr>'; return; }
+  let html='<thead><tr><th>Actividad</th><th>SA</th><th>Bloque</th><th>Criterios</th><th>Fecha</th><th></th></tr></thead><tbody>';
+  APP.activities.slice().reverse().forEach(a=>{
+    const b = APP.blocks.find(b=>b.id===a.block);
+    html += '<tr><td style="font-weight:600">'+a.name+'</td>'+
+      '<td><span class="tag">'+a.sa+'</span></td><td style="color:var(--ink-soft)">'+(b?b.name:'—')+'</td>'+
+      '<td class="mono" style="font-size:11px;color:var(--ink-faint)">'+a.criteria.join(' · ')+'</td>'+
+      '<td style="color:var(--ink-soft)">'+(a.date||'—')+'</td>'+
+      '<td style="text-align:right"><button class="btn quiet" data-del="'+a.id+'">eliminar</button></td></tr>';
+  });
+  t.innerHTML = html+'</tbody>';
+  t.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    APP.activities = APP.activities.filter(a=>a.id!==b.dataset.del);
+    persist(); renderAll(); toast('Actividad eliminada');
+  }));
+}
+
+/* ===================== SEGUIMIENTO ===================== */
+function renderHeat(){
+  const t = document.getElementById('heatTable');
+  if(!APP.students.length){ t.innerHTML='<tr><td>'+emptyState('Carga el grupo para ver el mapa de seguimiento.')+'</td></tr>'; return; }
+  const gc = groupCoverage();
+  const covNote = document.getElementById('covNote');
+  if(covNote){
+    covNote.innerHTML = gc.ce.length
+      ? '<span class="tag ochre">'+gc.pct+' % de criterios trabajados</span> <span style="color:var(--ink-soft);font-size:12.5px;margin-left:8px">Sin ninguna evidencia todavía: '+gc.ce.join(', ')+'</span>'
+      : '<span class="tag sage">'+gc.pct+' % de criterios trabajados</span> <span style="color:var(--ink-soft);font-size:12.5px;margin-left:8px">Todas las competencias específicas tienen evidencia.</span>';
+  }
+  let html = '<thead><tr><th class="corner">Alumno/a</th>'+CE.map(c=>
+    '<th><span class="cehead" title="'+c.name+'">'+icon(c.icon,'','stroke:'+c.color)+'<span class="c">'+c.code+'</span></span></th>').join('')+'</tr></thead><tbody>';
+  APP.students.forEach(s=>{
+    html += '<tr><td class="name">'+s+'</td>'+CE.map(c=>{
+      const v = avgCE(s,c.code);
+      if(v===null) return '<td><div class="heatcell nodata">–</div></td>';
+      const lvl = nearestLevel(v);
+      return '<td><div class="heatcell lvl-'+lvl.id+'" title="'+c.code+' · '+c.name+': '+v.toFixed(1)+'">'+lvl.id+'</div></td>';
+    }).join('')+'</tr>';
+  });
+  t.innerHTML = html+'</tbody>';
+}
+
+/* ===================== INFORME ===================== */
+function fillStudentPick(){
+  const sel = document.getElementById('studentPick');
+  const cur = sel.value;
+  sel.innerHTML = APP.students.map(s=>'<option value="'+s+'">'+s+'</option>').join('');
+  if(cur && APP.students.includes(cur)) sel.value = cur;
+}
+document.getElementById('studentPick').addEventListener('change', renderInforme);
+
+function renderInforme(){
+  const body = document.getElementById('informeBody');
+  if(!APP.students.length){ body.innerHTML = '<div class="card">'+emptyState('Carga el grupo para generar informes.')+'</div>'; return; }
+  const s = document.getElementById('studentPick').value || APP.students[0];
+  const gc = competencialGrade(s);
+  const gd = finalGrade(s);
+  const cov = coverage(s);
+  const senseEv = ceSenseEvidencia(s);
+
+  const kpi = '<div class="kpi" style="grid-template-columns:repeat(3,1fr)">'+
+    '<div class="k lead"><div class="n">'+(gc===null?'—':intGrade(gc))+'</div>'+
+      '<div class="l">Calificación competencial · '+(gc===null?'sin datos':term(gc).label)+
+      (gc===null?'':'<br><span class="mono" style="font-size:10.5px">media de trabajo '+gc.toFixed(2)+'</span>')+'</div></div>'+
+    '<div class="k"><div class="n">'+(gd===null?'—':intGrade(gd))+'</div>'+
+      '<div class="l">Acuerdo de departamento 50/20/20/10'+(gd===null?'':'<br><span class="mono" style="font-size:10.5px">media de trabajo '+gd.toFixed(2)+'</span>')+'</div></div>'+
+    '<div class="k"><div class="n">'+cov.pct+'<span style="font-size:17px"> %</span></div>'+
+      '<div class="l">Cobertura de la evaluación<br><span class="mono" style="font-size:10.5px">'+cov.n+' de '+cov.total+' criterios con evidencia</span></div></div>'+
+    '</div>'+
+    (senseEv.length ? '<div class="card" style="border-color:#EFDFB4;background:var(--mostassa-50);margin-bottom:18px;">'+
+      '<div style="font-size:13.5px;color:var(--ink-soft);line-height:1.6"><strong style="color:var(--ink)">Competencias todavía sin ninguna evidencia:</strong> '+
+      senseEv.join(', ')+'. Todas las competencias específicas deben ser objeto de evaluación a lo largo del curso.</div></div>' : '')+
+    '<div class="card" style="margin-bottom:18px;padding:16px 22px;"><div style="font-size:12.5px;color:var(--ink-faint);line-height:1.6">'+
+      'La calificación competencial es la media de las competencias específicas evaluadas —el referente que fija la normativa. La del departamento aplica los porcentajes por instrumento acordados. El número que va al acta es el entero; el decimal solo es valor de trabajo interno.</div></div>';
+
+  const bars = '<div class="card"><div class="cardhead"><h3>Mapa competencial</h3><span class="hint">media de los criterios registrados</span></div>'+
+    CE.map(c=>{
+      const v = avgCE(s,c.code);
+      const pct = v===null?0:Math.max(3,(v/10)*100);
+      const fill = v===null? 'var(--line)' : 'var(--lvl-'+nearestLevel(v).id+'-solid)';
+      return '<div class="bar-row"><div class="lbl">'+icon(c.icon,'','stroke:'+c.color)+'<span>'+c.code+'</span></div>'+
+        '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+fill+'"></div></div>'+
+        '<div class="val">'+(v===null?'–':v.toFixed(1))+'</div></div>';
+    }).join('')+'</div>';
+
+  const pend = pendingCriteria(s);
+  const rec = '<div class="card"><div class="cardhead"><h3>Plan de recuperación</h3>'+
+    '<span class="tag '+(pend.length?'ochre':'sage')+'">'+plural(pend.length,'criterio pendiente','criterios pendientes')+'</span></div>'+
+    (pend.length
+      ? '<p class="cardnote">En lugar de repetir la actividad entera, el trabajo de recuperación se concreta en estos criterios:</p>'+
+        pend.sort((a,b)=>a.avg-b.avg).map(c=>
+          '<div class="critline"><span class="lvl lvl-'+nearestLevel(c.avg).id+'" style="cursor:default">'+nearestLevel(c.avg).id+'</span>'+
+          '<span class="txt"><span class="mono" style="color:'+c.color+'">'+c.code+'</span> '+c.text+'</span></div>').join('')
+      : emptyState('Ningún criterio por debajo de «alcanzado».'))+'</div>';
+
+  body.innerHTML = kpi + bars + rec;
+}
+
+/* ===================== EXPORTAR ===================== */
+/* Descarga estándar (versión publicada en web) */
+function saveViaLink(filename, content, mime){
+  const url = URL.createObjectURL(new Blob([content],{type:mime}));
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+async function download(filename, content, mime){
+  try{
+    if(window.claude && window.claude.use){
+      const downloads = await window.claude.use('downloads');
+      if(downloads){
+        await downloads.save({filename, data:new Blob([content],{type:mime})});
+        toast('Archivo descargado');
+        return;
+      }
+    }
+    saveViaLink(filename, content, mime);
+    toast('Archivo descargado');
+  }catch(err){
+    if(err && err.code==='declined') return;
+    toast('No se ha podido descargar el archivo');
+  }
+}
+function csvEscape(v){ v=String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+
+document.getElementById('exportJSON').addEventListener('click', ()=>{
+  download('cuaderno-competencial-castellano-2eso.json', JSON.stringify(APP,null,2), 'application/json');
+});
+document.getElementById('importJSON').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const p = JSON.parse(r.result);
+      if(!p.students || !p.activities){ toast('El archivo no tiene el formato esperado'); return; }
+      APP = Object.assign({students:[],activities:[],blocks:JSON.parse(JSON.stringify(DEFAULT_BLOCKS))}, p);
+      persist();
+      document.getElementById('rosterInput').value = APP.students.join('\n');
+      renderAll(); toast('Copia importada correctamente');
+    }catch(err){ toast('No se ha podido leer el archivo'); }
+  };
+  r.readAsText(file); e.target.value='';
+});
+document.getElementById('exportGrades').addEventListener('click', ()=>{
+  const rows = [['Alumno/a','Calificación competencial (1-10)','Término',
+    ...APP.blocks.map(b=>b.name+' ('+b.pct+'%)'),
+    'Nota acuerdo departamento (1-10)','Media trabajo competencial','Media trabajo departamento','Cobertura (%)']];
+  APP.students.forEach(s=>{
+    const gc = competencialGrade(s), gd = finalGrade(s);
+    rows.push([s,
+      gc===null?'':intGrade(gc), gc===null?'':term(gc).label,
+      ...APP.blocks.map(b=>{const v=blockGrade(s,b.id); return v===null?'':v.toFixed(2);}),
+      gd===null?'':intGrade(gd),
+      gc===null?'':gc.toFixed(2), gd===null?'':gd.toFixed(2),
+      coverage(s).pct]);
+  });
+  download('notas-castellano-2eso.csv', rows.map(r=>r.map(csvEscape).join(',')).join('\n'), 'text/csv');
+});
+document.getElementById('exportDetail').addEventListener('click', ()=>{
+  const rows = [['Alumno/a','CE','Criterio','Texto del criterio','Nivel','Valor (0-10)','Actividades']];
+  APP.students.forEach(s=>ALL_CRIT.forEach(c=>{
+    const vals = marksFor(s,c.code);
+    if(!vals.length) return;
+    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+    rows.push([s, c.ce, c.code, c.text, nearestLevel(avg).id, avg.toFixed(2), vals.length]);
+  }));
+  download('detalle-criterios-castellano-2eso.csv', rows.map(r=>r.map(csvEscape).join(',')).join('\n'), 'text/csv');
+});
+
+/* ===================== RENDER ===================== */
+function renderAll(){
+  renderRoster(); renderCurriculum(); fillActivitySelectors();
+  renderCritPicker(selectedCriteria().length?selectedCriteria():null);
+  renderMarkTable(); renderActTable(); renderHeat(); fillStudentPick(); renderInforme();
+}
+
+load();
+document.getElementById('rosterInput').value = APP.students.join('\n');
+fillActivitySelectors();
+renderCritPicker();
+renderAll();
+
+try{
+  if(window.claude && window.claude.hot){
+    window.claude.hot.snapshot(()=>APP);
+    const boot = d=>{ if(d && d.students){ APP=d; document.getElementById('rosterInput').value=APP.students.join('\n'); } renderAll(); };
+    window.claude.hot.ready ? window.claude.hot.ready(boot) : boot(window.claude.hot.data);
+  }
+}catch(e){}
+
+})();
+</script>
+
+</body>
+</html>
